@@ -1,274 +1,196 @@
-<script src='jquery-3.3.1.js' > </script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sudoku Solver</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <style>
+        /* General input styles */
+        input {
+            border: 1px solid #000;
+            max-width: 50px;
+            height: 50px;
+            text-align: center;
+        }
 
-<style>
-input {
-	border:1px solid #000;
-	max-width:50px;
-	height:50px;
-	text-align:center;
-}
-.square { 
-  border:2px solid #000;
-  display: inline-block
-}
-.inline {
-  display: inline-block
-}
-.cell {
-	width:50px;
-	height:50px;
-	border:1px solid #000;
-	text-align:center;
-	line-height: 50px;;
-	overflow:hidden;
-}
-.autoFilled{
-	color:green;
-}
-</style>
-<div id="board">
-	
-</div>
-<div id="msg"></div>
-<br />
-<button id="fill" >Generate</button>
-<button id="reset" >Reset</button>
-<button id="loadTest" >Load Test</button>
+        /* Styles for Sudoku grid */
+        .square {
+            border: 2px solid #000;
+            display: inline-block;
+        }
 
-<script>
+        .inline {
+            display: inline-block;
+        }
 
-$ (document).ready(function(){ 
-     prepareBoard();
-	$('#loadTest').on('click',function(){
-		/*var vals = [
-			["0","0","0","0","0","0","0","0","0"],
-			["0","0","0","0","0","0","0","0","0"],
-			["0","0","0","0","0","0","0","0","0"],
-			["0","0","0","0","0","0","0","0","0"],
-			["0","0","0","0","0","0","0","0","0"],
-			["0","0","0","0","0","0","0","0","0"],
-			["0","0","0","0","0","0","0","0","0"],
-			["0","0","0","0","0","0","0","0","0"],
-			["0","0","0","0","0","0","0","0","0"],
-		];
-		var vals = [
-			["0","2","6","0","0","0","8","1","0"],
-			["3","0","0","7","0","8","0","0","6"],
-			["4","0","0","0","5","0","0","0","7"],
-			["0","5","0","1","0","7","0","9","0"],
-			["0","0","3","9","0","5","1","0","0"],
-			["0","4","0","3","0","2","0","5","0"],
-			["1","0","0","0","3","0","0","0","2"],
-			["5","0","0","2","0","4","0","0","9"],
-			["0","3","8","0","0","0","4","6","0"],
-		];
-		var vals = [
-			["4","0","0","0","5","0","8","6","0"],
-			["2","0","0","0","4","0","0","0","1"],
-			["7","0","0","0","0","0","0","0","3"],
-			["3","5","2","9","0","0","0","0","0"],
-			["0","0","0","8","0","0","0","0","9"],
-			["0","0","4","2","0","0","0","0","0"],
-			["0","0","0","7","9","0","0","3","0"],
-			["0","0","0","0","0","8","0","7","0"],
-			["5","0","0","0","0","0","9","0","8"],
-		];
-		var vals = [
-			["0","3","0","0","8","0","0","0","0"],
-			["4","0","0","0","0","0","0","5","0"],
-			["0","0","2","6","0","3","0","0","0"],
-			["7","0","0","3","0","0","4","1","0"],
-			["3","4","0","2","0","7","0","6","9"],
-			["0","2","9","0","0","1","0","0","7"],
-			["0","0","0","5","0","9","1","0","0"],
-			["0","9","0","0","0","0","0","0","5"],
-			["0","0","0","0","3","0","0","4","0"],
-		];*/
-		//hardest
-		var vals = [
-			["8","0","0","0","0","0","0","0","0"],
-			["0","0","3","6","0","0","0","0","0"],
-			["0","7","0","0","9","0","2","0","0"],
-			["0","5","0","0","0","7","0","0","0"],
-			["0","0","0","0","4","5","7","0","0"],
-			["0","0","0","1","0","0","0","3","0"],
-			["0","0","1","0","0","0","0","6","8"],
-			["0","0","8","5","0","0","0","1","0"],
-			["0","9","0","0","0","0","4","0","0"],
-		];
-		reset(vals); 
-	 });
-	 
-	 function reset(vals){
-		for(var i=0;i<9;i++){
-			for(var j=0;j<9;j++){
-				var fillVal = vals? vals[i][j]:""; 
-				$('#field'+i+"_"+j).html(fillVal=="0"?"":fillVal);
-			}
-		}
-		$('#msg').html("");
-		$("#fill").removeAttr("disabled");
-	 }
-	 function prepareBoard(){
-		 var  htm= "";
-		 var i=0;
-		 var j=0;
-		 for(var p=0;p<3;p++){
-			htm +="<div>";
-			for(var q=0;q<3;q++){
-				htm +="<div class='square'>";
-				i = p*3;
-				for(var r=0;r<3;r++,i++){
-					j= q*3;
-					htm +="<div>";
-					for(var s=0;s<3;s++,j++){
-						htm += "<div class='field inline cell' contenteditable id='field"+i+"_"+j+"' type='text'  row='"+i+"' col='"+j+"' ></div>"
-					}
-					htm +="</div>";
-				}
-				htm +="</div>"
-			}
-			htm +="</div>";
-		 }
-		$('#board').html(htm);
-	 }
-	 
-	 $('#reset').on('click',function(){
-		reset();
-	 });
-	 
-	 $('#fill').on('click',function(){
-		//$('.field').readonly(true);
-		 $("#fill").attr("disabled", "disabled");
-		var vals = [[],[],[],[],[],[],[],[],[]]; 
-		$.each($('.field'),function(){
-			var i = parseInt($(this).attr('row'));
-			var j = parseInt($(this).attr('col')); 
-			
-			if($(this).html()){ 
-				vals[i][j] ={userInput:true,val:parseInt($(this).html())};
-				$(this).html('<strong>'+parseInt($(this).html())+'</strong>');
-			}else{
-				vals[i][j] ={userInput:false,val:0};
-			}
-		});  
-		solveS(vals);
-	 });  
-	 
-	 /**
-		This method checks whether a number "v" is possible at the index ci,cj
-		Looks for duplicate entry in row, column and region (3X3 box) .
-	 **/	 
-	 function verifyAndAdd(vals,ci,cj,v){ 
-		//Look for duplicates in column/row
-		for(var i=0;i<9;i++){
-			if(vals[i][cj].val == v)
-				return false;
-		}
-		for(var j=0;j<9;j++){
-			if(vals[ci][j].val == v)
-				return false;
-		}
-		//Look for duplicate in region
-		var ir = ci-ci%3;
-		var jr = cj-cj%3;
-		for(var i=ir;i<ir+3;i++){
-			for(var j= jr;j<jr+3;j++){
-				if(vals[i][j].val == v){
-					return false;
-				}
-			}
-		}
-		return true;
-	 } 
-	 /*
-		Solves the sudoku by using trial erroe methos. 
-		Place a number in a cell and solve the sudokku
-	 */
-	 function solveS(vals){ 
-		var il = 9;
-		var jl = 9;
-		for(var i=0,j=0;i<il;i++){
-			var found = true;
-			j = j%jl;
-			for(;j<jl;j++){
-				//Do not change the user input (Pre placed numbers)
-				if(vals[i][j].userInput)
-					continue
-				if(!placeCorretNumberOr0(vals,i,j)){
-					//The cell cannot be placed with any number 0-9 so moving to the previouse cell
-					j= j-1
-					//find the previouse cell in the row whoch is not a user entry
-					for(var k=j;k>=0;k--){
-						j =-1;
-						if(!vals[i][k].userInput){
-							//-1 bcz it will get inc in loop
-							j = k-1;
-							break;
-						}
-					} 
-					//Look up reached begining of the raw and the cell is a user input cell
-					if(j==-1 && vals[i][0].userInput){ 
-						found = false;
-						break;
-					}else if(j==-1 && vals[i][0].val==0 ){ //Reached begining of the row and already tried 1-9 possibilities
-						found = false;
-						break;				
-					}
-				}
-			}
-			if(!found){
-				//This row cannot be completed with existing status of the sudokku
-				i = i-1;
-				//Revert the last raw
-				for(var k=i;k>=0;k--){
-					j =jl-1;
-					//find the last cell in previouse row which is not a user input cell
-					for(;j>=0;j--){
-						if(!vals[k][j].userInput){
-							//-1 bcz it will get inc in loop
-							i = k-1;
-							break;
-						}
-					}
-					//Found a cell which can be rechecked
-					if(j!=-1)
-						break;
-				} 
-				//There is no possible sudoku. Already tried all the combinations
-				if(i==-1 && vals[0][0].val==0){
-					$('#msg').html("Could not solve :(");
-					return;
-				}
-			}	
-		}
-		//Fill the numbers in UI
-		for(var i=0;i<il;i++)
-			for(var j=0; j<jl;j++)
-				if(!vals[i][j].userInput)
-					$('#field'+i+"_"+j).html("<i>"+vals[i][j].val+"</i>");
-					
-		$('#msg').html("Solved :)");
-	 }
-	 
-	 /**
-	 Find the correct number 1-9 or 0 
-	 The look starts from current number.
-	 By default all field will have 0
-	 if 1-9 is not possible, it will set the num to 0 
-	 **/
-	 function placeCorretNumberOr0(vals,i,j){ 	 
-		//console.log(i,j);
-		for(var val = vals[i][j].val+1;val<=9;val++){
-			if(verifyAndAdd(vals,i,j,val)){
-				vals[i][j].val = val;
-				//$('#field'+i+"_"+j).html("<i>"+val+"</i>");
-				return true;
-			}
-		}
-		vals[i][j].val = 0;
-		//$('#field'+i+"_"+j).html("<i></i>");
-		return false;
-	 }
-});
-</script>
+        .cell {
+            width: 50px;
+            height: 50px;
+            border: 1px solid #000;
+            text-align: center;
+            line-height: 50px;
+            overflow: hidden;
+        }
+
+        /* Autofill styling */
+        .autoFilled {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <div id="board"></div>
+    <div id="msg"></div>
+    <br />
+    <button id="fill">Generate</button>
+    <button id="reset">Reset</button>
+    <button id="loadTest">Load Test</button>
+
+    <script>
+        $(document).ready(function () {
+            const gridSize = 9;
+            const regionSize = 3;
+
+            // Prepare the board on page load
+            prepareBoard();
+
+            // Event Listeners
+            $('#loadTest').on('click', loadTest);
+            $('#reset').on('click', resetBoard);
+            $('#fill').on('click', fillBoard);
+
+            // Prepare Sudoku board UI
+            function prepareBoard() {
+                let html = '';
+                for (let p = 0; p < regionSize; p++) {
+                    html += '<div>';
+                    for (let q = 0; q < regionSize; q++) {
+                        html += "<div class='square'>";
+                        for (let r = 0; r < regionSize; r++) {
+                            html += '<div>';
+                            for (let s = 0; s < regionSize; s++) {
+                                const row = p * regionSize + r;
+                                const col = q * regionSize + s;
+                                html += `<div class='field inline cell' contenteditable id='field${row}_${col}' row='${row}' col='${col}'></div>`;
+                            }
+                            html += '</div>';
+                        }
+                        html += '</div>';
+                    }
+                    html += '</div>';
+                }
+                $('#board').html(html);
+            }
+
+            // Reset the board
+            function resetBoard() {
+                $('.field').html('');
+                $('#msg').html('');
+                $('#fill').removeAttr('disabled');
+            }
+
+            // Load test board
+            function loadTest() {
+                const testBoard = [
+                    ["8", "0", "0", "0", "0", "0", "0", "0", "0"],
+                    ["0", "0", "3", "6", "0", "0", "0", "0", "0"],
+                    ["0", "7", "0", "0", "9", "0", "2", "0", "0"],
+                    ["0", "5", "0", "0", "0", "7", "0", "0", "0"],
+                    ["0", "0", "0", "0", "4", "5", "7", "0", "0"],
+                    ["0", "0", "0", "1", "0", "0", "0", "3", "0"],
+                    ["0", "0", "1", "0", "0", "0", "0", "6", "8"],
+                    ["0", "0", "8", "5", "0", "0", "0", "1", "0"],
+                    ["0", "9", "0", "0", "0", "0", "4", "0", "0"],
+                ];
+                resetBoard();
+                fillBoardWithValues(testBoard);
+            }
+
+            // Fill board with given values
+            function fillBoardWithValues(values) {
+                for (let i = 0; i < gridSize; i++) {
+                    for (let j = 0; j < gridSize; j++) {
+                        const value = values[i][j];
+                        const cell = $(`#field${i}_${j}`);
+                        if (value !== "0") {
+                            cell.html(value).addClass('autoFilled');
+                        }
+                    }
+                }
+            }
+
+            // Fill the board and solve
+            function fillBoard() {
+                $('#fill').attr('disabled', true);
+                const values = Array.from({ length: gridSize }, () => Array(gridSize).fill({ userInput: false, val: 0 }));
+
+                $('.field').each(function () {
+                    const row = parseInt($(this).attr('row'));
+                    const col = parseInt($(this).attr('col'));
+                    const cellValue = $(this).text();
+
+                    if (cellValue) {
+                        values[row][col] = { userInput: true, val: parseInt(cellValue) };
+                        $(this).html(`<strong>${cellValue}</strong>`);
+                    }
+                });
+
+                if (!solveSudoku(values)) {
+                    $('#msg').html('Could not solve :(');
+                } else {
+                    $('#msg').html('Solved :)');
+                }
+            }
+
+            // Solve Sudoku using backtracking
+            function solveSudoku(values) {
+                const emptyCell = findEmpty(values);
+                if (!emptyCell) return true;
+
+                const [row, col] = emptyCell;
+                for (let num = 1; num <= gridSize; num++) {
+                    if (isValid(values, row, col, num)) {
+                        values[row][col].val = num;
+                        if (solveSudoku(values)) return true;
+                        values[row][col].val = 0;
+                    }
+                }
+                return false;
+            }
+
+            // Find the next empty cell
+            function findEmpty(values) {
+                for (let i = 0; i < gridSize; i++) {
+                    for (let j = 0; j < gridSize; j++) {
+                        if (values[i][j].val === 0) {
+                            return [i, j];
+                        }
+                    }
+                }
+                return null;
+            }
+
+            // Check if a number is valid in a cell
+            function isValid(values, row, col, num) {
+                for (let i = 0; i < gridSize; i++) {
+                    if (values[row][i].val === num || values[i][col].val === num) {
+                        return false;
+                    }
+                }
+
+                const boxRowStart = row - (row % regionSize);
+                const boxColStart = col - (col % regionSize);
+                for (let i = boxRowStart; i < boxRowStart + regionSize; i++) {
+                    for (let j = boxColStart; j < boxColStart + regionSize; j++) {
+                        if (values[i][j].val === num) {
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            }
+        });
+    </script>
+</body>
+</html>
